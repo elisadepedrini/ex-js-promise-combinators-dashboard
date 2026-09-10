@@ -19,17 +19,6 @@
 // Stampare i dati in console in un messaggio ben formattato.
 // Testa la funzione con la query "london"
 
-// 📁 Esempio di utilizzo
-// getDashboardData('london')
-//     .then(data => {
-//         console.log('Dasboard data:', data);
-//         console.log(
-//             `${data.city} is in ${data.country}.\n` +
-//             `Today there are ${data.temperature} degrees and the weather is ${data.weather}.\n`+
-//             `The main airport is ${data.airport}.\n`
-//         );
-//     })
-//     .catch(error => console.error(error));
 
 // 📁 Esempio di output atteso
 // // Risposta API
@@ -45,4 +34,37 @@
 // London is in United Kingdom. 
 // Today there are 18 degrees and the weather is Partly cloudy.
 // The main airport is London Heathrow Airport.
+
+
+
+async function getDashboardData(query) {
+    const cityPromise = fetch(`http://localhost:3333/destinations?search=${query}`).then(res => res.json())
+    const weatherPromise = fetch(`http://localhost:3333/weathers?search=${query}`).then(res => res.json())
+    const airportPromise = fetch(`http://localhost:3333/airports?search=${query}`).then(res => res.json())
+
+    const [cities, weathers, airports] = await Promise.all([cityPromise, weatherPromise, airportPromise])
+
+
+    const city = cities[0].name
+    const country = cities[0].country
+    const temperature = weathers[0].temperature
+    const weather = weathers[0].weather_description
+    const airport = airports[0].name
+
+    
+    return {city, country, temperature, weather, airport}
+}
+
+
+
+getDashboardData('london')
+    .then(data => {
+        console.log('Dasboard data:', data);
+        console.log(
+            `${data.city} is in ${data.country}.\n` +
+            `Today there are ${data.temperature} degrees and the weather is ${data.weather}.\n`+
+            `The main airport is ${data.airport}.\n`
+        );
+    })
+    .catch(error => console.error(error));
 
